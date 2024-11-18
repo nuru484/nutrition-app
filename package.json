@@ -6,8 +6,7 @@
     "dev": "node --watch server",
     "tailwind:css": "npx tailwindcss -i ./src/public/styles/tailwind.css -o ./src/public/styles/tailwindOut.css --watch",
     "start": "node server.js",
-    "build": "prisma migrate deploy",
-    "prisma:generate": "prisma generate"
+    "build": "prisma generate"
   },
   "keywords": [],
   "author": "",
