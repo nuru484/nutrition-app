@@ -1,14 +1,26 @@
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-const { subDays } = require('date-fns');
-
 const prisma = new PrismaClient();
 
-async function main() {
-  // Previous seed code remains the same until after meals creation
+const createMealPreparation = async (data) => {
+  const existingMealPreparation = await prisma.mealPreparation.findFirst({
+    where: { mealId: data.mealId },
+  });
 
-  // Add meal preparations after creating meals
-  await prisma.mealPreparation.create({
+  if (existingMealPreparation) {
+    console.log(
+      `Meal preparation for Meal ID ${data.mealId} already exists. Skipping creation.`
+    );
+    return;
+  }
+
+  await prisma.mealPreparation.create({ data });
+  console.log(
+    `Meal preparation for Meal ID ${data.mealId} created successfully.`
+  );
+};
+
+async function createMealPreparationAll() {
+  await createMealPreparation({
     data: {
       mealId: '1', // Tuo Zaafi
       timeToMake: 90,
@@ -83,7 +95,7 @@ async function main() {
     },
   });
 
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '2', // Wasawasa
       timeToMake: 45,
@@ -152,7 +164,7 @@ async function main() {
     },
   });
 
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '3', // Tubani
       timeToMake: 60,
@@ -230,7 +242,7 @@ async function main() {
     },
   });
 
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '4', // Zomkom
       timeToMake: 30,
@@ -299,7 +311,7 @@ async function main() {
     },
   });
 
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '7', // Fufu with Groundnut Soup
       timeToMake: 120,
@@ -397,7 +409,7 @@ async function main() {
   });
 
   // 5. Koko with Koose
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '5', // Koko with Koose
       timeToMake: 50,
@@ -447,7 +459,7 @@ async function main() {
   });
 
   // 6. Chinchinga
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '6', // Chinchinga
       timeToMake: 40,
@@ -489,7 +501,7 @@ async function main() {
   });
 
   // 8. Pito
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '8', // Pito
       timeToMake: 1440, // 24 hours
@@ -535,7 +547,7 @@ async function main() {
   });
 
   // 9. Rice Balls with Light Soup
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '9', // Rice Balls with Light Soup
       timeToMake: 90,
@@ -583,7 +595,7 @@ async function main() {
   });
 
   // 10. Beans and Fried Plantain (Red Red)
-  await prisma.mealPreparation.create({
+  await createMealPreparation({
     data: {
       mealId: '10', // Beans and Fried Plantain
       timeToMake: 60,
@@ -630,16 +642,7 @@ async function main() {
     },
   });
 
-  // Continue with similar detail for Kulikuli, Fried Yam with Shito, etc.
-
   console.log('All meal preparations have been seeded successfully.');
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+module.exports = createMealPreparationAll;

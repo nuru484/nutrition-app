@@ -10,6 +10,8 @@ const methodOverride = require('method-override');
 
 const initializePassport = require('./src/config/passport-config');
 const routes = require('./src/routes/index-routes');
+const createMeals = require('./src/seeds/createMeals');
+const createMealPreparationAll = require('./src/seeds/createMealsPreparation');
 
 const app = express();
 
@@ -44,9 +46,21 @@ initializePassport(passport);
 
 app.use('/', routes);
 
-const port = process.env.PORT || 4000;
+async function startServer() {
+  try {
+    await createMeals();
+    await createMealPreparationAll();
+    console.log('Database seeded successfully.');
+  } catch (error) {
+    console.error('Error seeding database:', error);
+  }
 
-app.listen(port, () => {
-  console.log(`App listening on localhost port ${port}`);
-  console.log('\x1b[34m%s\x1b[0m', ` http://localhost:${port}/`);
-});
+  const port = process.env.PORT || 4000;
+
+  app.listen(port, () => {
+    console.log(`App listening on localhost port ${port}`);
+    console.log('\x1b[34m%s\x1b[0m', ` http://localhost:${port}/`);
+  });
+}
+
+startServer();
