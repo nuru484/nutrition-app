@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "node --watch server",
     "tailwind:css": "npx tailwindcss -i ./src/public/styles/tailwind.css -o ./src/public/styles/tailwindOut.css --watch",
-    "start": "node server.js",
-    "build": "prisma generate"
+    "build": "prisma generate",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
