@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Nutrition Goals</title>
+    <style>
+      /* Modal background overlay */
+      #nutritionModal {
+        background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+      }
+
+      /* Modal content styling */
+      .modal-content {
+        width: 90%; /* Responsive width */
+        max-width: 400px; /* Maximum width */
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Strong shadow */
+        transform: translateY(-50px); /* Subtle pop-up effect */
+      }
+
+      #modalMessage {
+        color: #333; /* Darker text */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 overflow-x-hidden">
+    <main class="container mx-auto p-8">
+      <h1 class="text-3xl font-semibold mb-6">Your Nutrition Goals</h1>
+
+      <!-- Form to add a new nutrition goal -->
+      <form
+        action="/nutrition-goals"
+        method="POST"
+        class="mb-6 bg-white p-4 rounded-lg shadow-md"
+        onsubmit="addNutritionalGoal(event);"
+      >
+        <h2 class="text-xl font-semibold mb-4">Set a New Nutrition Goal</h2>
+
+        <!-- Nutrient Type Dropdown -->
+        <div class="mb-4">
+          <label
+            for="nutrientType"
+            class="block text-gray-700 font-semibold mb-2"
+          >
+            Nutrient Type:
+          </label>
+          <select
+            name="nutrientType"
+            id="nutrientType"
+            required
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="" disabled selected>Select a nutrient type</option>
+            <option value="Calories">Calories</option>
+            <option value="Protein">Protein</option>
+            <option value="Carbohydrates">Carbohydrates</option>
+            <option value="Fat">Fat</option>
+          </select>
+        </div>
+
+        <!-- Goal Amount Input -->
+        <div class="mb-4">
+          <label
+            for="goalAmount"
+            class="block text-gray-700 font-semibold mb-2"
+          >
+            Goal Amount (in grams):
+          </label>
+          <input
+            type="number"
+            min="0"
+            name="goalAmount"
+            id="goalAmount"
+            required
+            step="0.01"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="e.g., 100"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Add Goal
+        </button>
+      </form>
+
+      <!-- List of current nutrition goals -->
+      <h2 class="text-xl font-semibold mb-4">Current Nutrition Goals</h2>
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <% if (nutritionGoals.length > 0) { %>
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-200">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Nutrient Type
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Goal Amount (g)
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% nutritionGoals.forEach(goal => { %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= goal.nutrientType %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= goal.goalAmount %> g
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <button
+                  class="text-red-600 hover:text-red-800"
+                  onclick="handleDelete(event, 'nutrition-goals', '<%= goal.id %>')"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } else { %>
+        <p class="text-gray-500">No nutrition goals set yet.</p>
+        <% } %>
+      </div>
+    </main>
+
+    <!-- Modal -->
+    <div
+      id="nutritionModal"
+      class="fixed inset-0 flex items-center justify-center z-50 hidden"
+    >
+      <div class="modal-content">
+        <h2 id="modalMessage" class="text-lg font-semibold"></h2>
+        <button
+          id="closeModalButton"
+          class="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

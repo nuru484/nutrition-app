@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Meals</title>
+    <style>
+      /* Main container without scroll behavior */
+      main {
+        padding: 2rem; /* Adjust padding for aesthetics */
+      }
+
+      /* Remove the max-height and overflow from meals-container */
+      .meals-container {
+        padding-bottom: 2rem; /* Optional padding for aesthetics */
+      }
+
+      /* Modal background overlay */
+      #success-modal {
+        background-color: rgba(0, 0, 0, 0.5); /* Dark background for overlay */
+      }
+
+      /* Hide modal initially */
+      #success-modal.hidden {
+        display: none;
+      }
+
+      /* Updated modal design */
+      #mealsModal {
+        background-color: rgba(0, 0, 0, 0.6); /* Slightly darker background */
+      }
+
+      /* Smaller and more defined modal content */
+      #mealsModal .modal-content {
+        width: 90%; /* Adjust width */
+        max-width: 400px; /* Maximum width for larger screens */
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Strong shadow for emphasis */
+        transform: translateY(-50px); /* Subtle animation feel */
+      }
+
+      #modalMessage {
+        color: #333; /* Darker text for contrast */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 overflow-x-hidden">
+    <main class="container mx-auto">
+      <div class="flex justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold">Meals Available</h1>
+          <p class="py-4 text-sm">
+            You can click on a meal to see more details like the nutrients it
+            contains
+          </p>
+        </div>
+        <!-- View Consumed Meals Button -->
+        <div class="mt-4">
+          <button
+            onclick="loadContent('user-meals')"
+            class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 hover:bg-green-600"
+          >
+            View Consumed Meals
+          </button>
+        </div>
+      </div>
+
+      <div class="meals-container">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        >
+          <% if (meals.length > 0) { %> <% meals.forEach(meal => { %>
+          <div class="bg-white rounded-lg shadow-lg flex flex-col h-full">
+            <div onclick="loadContent('meals/<%= meal.id %>')" class="flex-1">
+              <img
+                src="/photos/meals/<%= meal.photo %>"
+                alt="<%= meal.name %>"
+                class="w-full h-4/5 object-cover rounded-t-lg cursor-help"
+                title="Click to see meal details"
+              />
+
+              <div class="p-2 flex flex-col h-1/5">
+                <h2 class="text-xl font-semibold"><%= meal.name %></h2>
+              </div>
+            </div>
+            <button
+              class="bg-blue-500 text-white font-semibold py-2 rounded-b-lg mt-2 transition duration-200 hover:bg-blue-600"
+              data-user-id="<%= userId %>"
+              onclick="consumeMeal('<%= meal.id %>')"
+            >
+              Consume
+            </button>
+
+            <button
+              class="my-2"
+              onclick="loadContent('meals/preparation/<%= meal.id %>')"
+            >
+              View Preparation
+            </button>
+          </div>
+          <% }) %> <% } else { %>
+          <div class="col-span-full text-center text-gray-500">
+            No meals found.
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal -->
+    <div
+      id="mealsModal"
+      class="fixed inset-0 flex items-center justify-center z-50 hidden"
+    >
+      <div class="modal-content">
+        <h2 id="modalMessage" class="text-lg font-semibold"></h2>
+        <button
+          id="closeModalButton"
+          class="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

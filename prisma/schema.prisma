@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  password           String
+  name               String              @unique
+  waterConsumption   WaterConsumption[]
+  weightRecords      WeightRecord[]
+  userExercises      UserExercise[]
+  userMeals          UserMeal[]
+  userNutritionGoals UserNutritionGoal[]
+  NutritionInfo      NutritionInfo[]
+}
+
+model Meal {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  calories        Int
+  protein         Float
+  carbohydrates   Float
+  fat             Float
+  photo           String
+  description     String
+  UserMeal        UserMeal[]
+  MealPreparation MealPreparation?
+}
+
+model WeightRecord {
+  id         String   @id @default(cuid())
+  weight     Float
+  recordedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascading delete
+  userId     String
+}
+
+model WaterConsumption {
+  id         String   @id @default(cuid())
+  amount     Float
+  recordedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascading delete
+  userId     String
+}
+
+model Exercise {
+  id                String         @id @default(cuid())
+  name              String         @unique()
+  caloriesPerMinute Int
+  duration          Int
+  description       String
+  UserExercise      UserExercise[]
+}
+
+model UserExercise {
+  id             String   @id @default(cuid())
+  duration       Int
+  caloriesBurned Int
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  exercise       Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exerciseId     String
+}
+
+model NutritionInfo {
+  id            String   @id @default(cuid())
+  calories      Int
+  protein       Float
+  carbohydrates Float
+  fat           Float
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascading delete
+  userId        String
+  createdAt     DateTime @default(now())
+}
+
+// Model for tracking meals consumed by users
+model UserMeal {
+  id         String   @id @default(cuid())
+  consumedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascading delete
+  userId     String
+  meal       Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade) // Added onDelete for Meal
+  mealId     String
+  updatedAt  DateTime @updatedAt
+}
+
+model UserNutritionGoal {
+  id           String   @id @default(cuid())
+  nutrientType String // Type of nutrient (e.g., Protein, Carbohydrates, Fat)
+  goalAmount   Float // Amount the user aims for
+  achieved     Boolean  @default(false) // New field to track if the goal is achieved
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascading delete
+  userId       String
+}
+
+model MealPreparation {
+  id          String           @id @default(cuid())
+  meal        Meal             @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  mealId      String           @unique
+  timeToMake  Int
+  difficulty  String
+  servings    Int
+  steps       PrepStep[]
+  ingredients PrepIngredient[]
+  equipment   PrepEquipment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model PrepStep {
+  id              String          @id @default(cuid())
+  stepNumber      Int
+  description     String
+  timeInMinutes   Int
+  mealPreparation MealPreparation @relation(fields: [mealPrepId], references: [id], onDelete: Cascade)
+  mealPrepId      String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model PrepIngredient {
+  id              String          @id @default(cuid())
+  name            String
+  amount          Float
+  unit            String
+  mealPreparation MealPreparation @relation(fields: [mealPrepId], references: [id], onDelete: Cascade)
+  mealPrepId      String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model PrepEquipment {
+  id              String          @id @default(cuid())
+  name            String
+  optional        Boolean         @default(false)
+  mealPreparation MealPreparation @relation(fields: [mealPrepId], references: [id], onDelete: Cascade)
+  mealPrepId      String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}

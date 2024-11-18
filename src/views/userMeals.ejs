@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Meals Consumed</title>
+  </head>
+  <body class="bg-gray-100 overflow-x-hidden">
+    <main class="container mx-auto p-8 mb-8">
+      <h1 class="text-3xl font-semibold mb-6">Overall Meals Consumed</h1>
+
+      <ul class="space-y-4">
+        <% userMeals.forEach(function(userMeal) { %>
+        <li
+          class="bg-white p-4 rounded-lg shadow-lg flex justify-between items-center"
+        >
+          <div>
+            <span class="text-xl font-semibold text-gray-700">
+              <%= userMeal.meal.name %>
+            </span>
+            <p class="text-gray-500">
+              Consumed on: <%= userMeal.consumedAt.toLocaleDateString() %>
+            </p>
+          </div>
+          <span
+            class="bg-green-100 text-green-800 text-sm font-semibold py-1 px-3 rounded-full"
+          >
+            Done
+          </span>
+        </li>
+        <% }) %>
+      </ul>
+    </main>
+  </body>
+</html>

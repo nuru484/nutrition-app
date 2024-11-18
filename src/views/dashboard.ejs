@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/x-icon" href="/photos/logo.jpg" />
+    <title>NutriApp</title>
+    <style>
+      /* Prevent body from scrolling */
+      body {
+        overflow: hidden; /* Hide body overflow to prevent scrolling */
+      }
+      /* Set sidebar height and styling */
+      #sidebar {
+        height: 100vh; /* Full viewport height */
+        width: 250px; /* Width of the sidebar */
+      }
+      /* Set main container height and scrolling */
+      #main-container {
+        height: 100vh; /* Full viewport height */
+        overflow-y: auto; /* Enable vertical scrolling inside main container */
+        padding: 2rem; /* Keep padding for aesthetics */
+      }
+      /* Sidebar styles */
+      .sidebar-button {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 flex">
+    <aside
+      id="sidebar"
+      class="bg-blue-600 p-4 flex flex-col justify-between text-white"
+    >
+      <div>
+        <div class="logo flex items-center mb-6">
+          <img src="/photos/logo.jpg" class="w-10 h-10 mr-2" alt="App Logo" />
+          <span class="text-2xl font-semibold">NutriApp</span>
+        </div>
+
+        <div class="mb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-full p-2 rounded bg-blue-500 text-white focus:outline-none"
+          />
+        </div>
+
+        <nav>
+          <ul class="flex flex-col space-y-2">
+            <li>
+              <a href="/dashboard">
+                <button
+                  id="dashboard"
+                  class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                >
+                  Dashboard
+                </button>
+              </a>
+            </li>
+
+            <li>
+              <button
+                id="meals"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('meals')"
+              >
+                Meals
+              </button>
+            </li>
+
+            <li>
+              <button
+                id="exercise"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('exercises')"
+              >
+                Exercise
+              </button>
+            </li>
+
+            <li>
+              <button
+                id="water"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('water-consumption')"
+              >
+                Water
+              </button>
+            </li>
+            <li>
+              <button
+                id="weight"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('weight-records')"
+              >
+                Weight
+              </button>
+            </li>
+            <li>
+              <button
+                id="nutrition-goals"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('nutrition-goals')"
+              >
+                Nutrition Goals
+              </button>
+            </li>
+            <li>
+              <button
+                id="nutrition-log"
+                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                onclick="loadContent('nutritional-info')"
+              >
+                Nutrition Log
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <a
+        href="/logout"
+        class="bg-red-500 hover:bg-red-600 text-center text-white py-2 rounded transition mt-4"
+      >
+        <button>Logout</button>
+      </a>
+    </aside>
+
+    <main id="main-container" class="flex-grow container mx-auto p-8">
+      <h1 class="text-3xl font-semibold mb-6">Dashboard</h1>
+
+      <!-- First summary Section -->
+      <section
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
+      >
+        <div class="bg-blue-100 p-6 rounded-lg shadow-lg text-center">
+          <h3 class="text-lg font-medium">Calories (24hrs)</h3>
+          <p class="text-3xl font-bold"><%= totalCalories %> kcal</p>
+        </div>
+        <div class="bg-green-100 p-6 rounded-lg shadow-lg text-center">
+          <h3 class="text-lg font-medium">Protein (24hrs)</h3>
+          <p class="text-3xl font-bold"><%= totalProtein %> g</p>
+        </div>
+        <div class="bg-yellow-100 p-6 rounded-lg shadow-lg text-center">
+          <h3 class="text-lg font-medium">Carbohydrates (24hrs)</h3>
+          <p class="text-3xl font-bold"><%= totalCarbs %> g</p>
+        </div>
+        <div class="bg-red-100 p-6 rounded-lg shadow-lg text-center">
+          <h3 class="text-lg font-medium">Fat (24hrs)</h3>
+          <p class="text-3xl font-bold"><%= totalFat %> g</p>
+        </div>
+      </section>
+
+      <!-- Adjusted grid for three sections in a row -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section class="bg-white p-6 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-semibold mb-4">Water Consumption Today</h2>
+          <p class="text-xl"><%= totalWater %> L / 5 L (Goal)</p>
+        </section>
+
+        <section class="bg-white p-6 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-semibold mb-4">Latest Weight Record</h2>
+          <% if (latestWeight) { %>
+          <p class="text-xl">
+            Weight: <%= latestWeight.weight %> lbs on <%= new
+            Date(latestWeight.recordedAt).toDateString() %>
+          </p>
+          <% } else { %>
+          <p class="text-xl">No weight records found.</p>
+          <% } %>
+        </section>
+
+        <!-- Nutritional Goals Section -->
+        <section class="bg-white p-6 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-semibold mb-4">Nutritional Goals</h2>
+          <ul class="space-y-2 text-gray-600">
+            <% if (nutritionalGoals && nutritionalGoals.length > 0) { %> <%
+            nutritionalGoals.forEach(goal => { %>
+            <li>
+              <p class="text-sm">
+                - Gain <%= goal.nutrientType %>: <%= goal.goalAmount %> g <% if
+                (goal.achieved) { %> <% } else { %> <% } %>
+              </p>
+            </li>
+            <% }); %> <% } else { %>
+            <p>No goals set.</p>
+            <% } %>
+          </ul>
+        </section>
+      </div>
+
+      <section class="bg-white p-6 rounded-lg shadow-lg my-6">
+        <h2 class="text-2xl font-semibold mb-4">Charts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-medium mb-2">
+              Calorie Intake Over the Last 7 Days
+            </h3>
+            <canvas id="calorieIntakeChart" class="w-full h-64"></canvas>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium mb-2">
+              Weight Tracking Over the Last 7 Days
+            </h3>
+            <canvas id="weightChart" class="w-full h-64"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Calorie Intake Chart
+      const calorieIntakeData = <%- JSON.stringify(calorieIntakeData) %>;
+      const ctx1 = document.getElementById('calorieIntakeChart').getContext('2d');
+      const calorieIntakeChart = new Chart(ctx1, {
+          type: 'bar',
+          data: calorieIntakeData,
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                  },
+              },
+          },
+      });
+
+      // Weight Tracking Chart
+      const weightChartData = <%- JSON.stringify(weightChartData) %>;
+      const ctx2 = document.getElementById('weightChart').getContext('2d');
+      const weightChart = new Chart(ctx2, {
+          type: 'line',
+          data: weightChartData,
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                  },
+              },
+          },
+      });
+    </script>
+
+    <script type="text/javascript" src="/scripts/dashboardScripts.js"></script>
+    <script type="text/javascript" src="/scripts/mealsScripts.js"></script>
+    <script type="text/javascript" src="/scripts/exerciseScripts.js"></script>
+    <script
+      type="text/javascript"
+      src="/scripts/waterConsumptionScripts.js"
+    ></script>
+    <script type="text/javascript" src="/scripts/weightScripts.js"></script>
+    <script
+      type="text/javascript"
+      src="/scripts/nutritionalGoalScripts.js"
+    ></script>
+  </body>
+</html>

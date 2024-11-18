@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Choose an Exercise</title>
+    <style>
+      /* Modal background overlay */
+      #exerciseModal {
+        background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+      }
+
+      /* Modal content styling */
+      #exerciseModal .modal-content {
+        width: 90%; /* Responsive width */
+        max-width: 400px; /* Maximum width for larger screens */
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Strong shadow for emphasis */
+        transform: translateY(-50px); /* Subtle pop-up effect */
+      }
+
+      #modalMessage {
+        color: #333; /* Darker text for contrast */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 overflow-x-hidden">
+    <main class="container mx-auto p-8">
+      <h1 class="text-3xl font-semibold mb-6">Do Exercise</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Do Exercise Form -->
+        <form
+          action="/add-user-exercise"
+          method="POST"
+          class="bg-white p-6 rounded-lg shadow-lg"
+          onsubmit="handleSubmit(event);"
+        >
+          <div class="mb-4">
+            <label for="exercise" class="block text-gray-700 font-semibold mb-2"
+              >Select an exercise:</label
+            >
+            <select
+              name="exerciseId"
+              id="exercise"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <% exercises.forEach(function (exercise) { %>
+              <option value="<%= exercise.id %>"><%= exercise.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label for="duration" class="block text-gray-700 font-semibold mb-2"
+              >Duration (in minutes):</label
+            >
+            <input
+              type="number"
+              min="10"
+              name="duration"
+              value="10"
+              required
+              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Exercise
+          </button>
+        </form>
+
+        <!-- Completed Exercises Section -->
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-center items-center"
+        >
+          <h2 class="text-2xl font-semibold mb-4">Completed Exercises</h2>
+          <p class="text-gray-700 mb-4">
+            View your completed exercises and track your progress.
+          </p>
+          <button
+            onclick="loadContent('user-exercises');"
+            class="block text-center w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            View Completed Exercises
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div
+        id="exerciseModal"
+        class="fixed inset-0 flex items-center justify-center z-50 hidden"
+      >
+        <div class="modal-content">
+          <h2 id="modalMessage" class="text-lg font-semibold"></h2>
+          <button
+            id="closeModalButton"
+            class="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

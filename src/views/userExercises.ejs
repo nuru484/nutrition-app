@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Your Exercises</title>
+  </head>
+  <body class="bg-gray-100 overflow-x-hidden">
+    <main class="container mx-auto p-8 mb-8">
+      <h1 class="text-3xl font-semibold mb-6">Your Exercises</h1>
+
+      <% if (userExercises.length === 0) { %>
+      <p class="text-gray-600">No exercises completed.</p>
+      <% } else { %>
+      <ul class="space-y-4">
+        <% userExercises.forEach(function(userExercise) { %>
+        <li
+          class="bg-white p-4 rounded-lg shadow-lg flex justify-between items-center"
+        >
+          <div>
+            <span class="text-xl font-semibold text-gray-700">
+              <%= userExercise.exercise.name %>
+            </span>
+            <p class="text-gray-600">
+              Duration: <%= userExercise.duration %> minutes
+            </p>
+            <p class="text-gray-500">
+              Completed on: <%= userExercise.createdAt.toLocaleDateString() %>
+            </p>
+          </div>
+          <span
+            class="bg-green-100 text-green-800 text-sm font-semibold py-1 px-3 rounded-full"
+          >
+            Done
+          </span>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </main>
+  </body>
+</html>
