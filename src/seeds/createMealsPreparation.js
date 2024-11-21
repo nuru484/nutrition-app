@@ -7,7 +7,7 @@ async function createMealPreparationAll() {
   if (!mealPreparation) {
     await prisma.mealPreparation.create({
       data: {
-        mealId: '1', // Tuo Zaafi
+        mealId: '1',
         timeToMake: 90,
         difficulty: 'Medium',
         servings: 4,
