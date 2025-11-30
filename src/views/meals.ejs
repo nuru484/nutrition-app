@@ -4,126 +4,146 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="styles/tailwindOut.css" rel="stylesheet" />
-    <title>Meals</title>
+    <title>Meals Directory</title>
     <style>
-      /* Main container without scroll behavior */
       main {
-        padding: 2rem; /* Adjust padding for aesthetics */
-      }
-
-      /* Remove the max-height and overflow from meals-container */
-      .meals-container {
-        padding-bottom: 2rem; /* Optional padding for aesthetics */
-      }
-
-      /* Modal background overlay */
-      #success-modal {
-        background-color: rgba(0, 0, 0, 0.5); /* Dark background for overlay */
-      }
-
-      /* Hide modal initially */
-      #success-modal.hidden {
-        display: none;
-      }
-
-      /* Updated modal design */
-      #mealsModal {
-        background-color: rgba(0, 0, 0, 0.6); /* Slightly darker background */
-      }
-
-      /* Smaller and more defined modal content */
-      #mealsModal .modal-content {
-        width: 90%; /* Adjust width */
-        max-width: 400px; /* Maximum width for larger screens */
-        background-color: white;
         padding: 2rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Strong shadow for emphasis */
-        transform: translateY(-50px); /* Subtle animation feel */
       }
 
-      #modalMessage {
-        color: #333; /* Darker text for contrast */
+      .meals-container {
+        padding-bottom: 2rem;
+      }
+
+      .meal-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+      }
+
+      .meal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .meal-image {
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .nutrient-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .description-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.5;
       }
     </style>
   </head>
-  <body class="bg-gray-100 overflow-x-hidden">
+  <body class="bg-gradient-to-br from-blue-50 via-white to-indigo-100 min-h-screen">
     <main class="container mx-auto">
-      <div class="flex justify-between">
-        <div>
-          <h1 class="text-3xl font-semibold">Meals Available</h1>
-          <p class="py-4 text-sm">
-            You can click on a meal to see more details like the nutrients it
-            contains
-          </p>
-        </div>
-        <!-- View Consumed Meals Button -->
-        <div class="mt-4">
-          <button
-            onclick="loadContent('user-meals')"
-            class="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 hover:bg-green-600"
-          >
-            View Consumed Meals
-          </button>
-        </div>
+      <!-- Header Section -->
+      <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+          Meals Directory
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Explore our comprehensive collection of nutritious meals with detailed nutritional information and descriptions.
+        </p>
       </div>
 
+      <!-- Meals Grid -->
       <div class="meals-container">
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-        >
-          <% if (meals.length > 0) { %> <% meals.forEach(meal => { %>
-          <div class="bg-white rounded-lg shadow-lg flex flex-col h-full">
-            <div onclick="loadContent('meals/<%= meal.id %>')" class="flex-1">
-              <img
-                src="/photos/meals/<%= meal.photo %>"
-                alt="<%= meal.name %>"
-                class="w-full h-4/5 object-cover rounded-t-lg cursor-help"
-                title="Click to see meal details"
-              />
+        <% if (meals.length > 0) { %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <% meals.forEach(meal => { %>
+              <div class="meal-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <!-- Meal Image -->
+                <div class="relative">
+                  <img
+                    src="/photos/meals/<%= meal.photo %>"
+                    alt="<%= meal.name %>"
+                    class="meal-image w-full"
+                    onerror="this.src='/photos/meals/placeholder.jpg'"
+                  />
+                  <div class="absolute top-3 right-3">
+                    <span class="nutrient-badge">
+                      <%= meal.calories %> kcal
+                    </span>
+                  </div>
+                </div>
 
-              <div class="p-2 flex flex-col h-1/5">
-                <h2 class="text-xl font-semibold"><%= meal.name %></h2>
+                <!-- Meal Name -->
+                <div class="p-6">
+                  <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    <%= meal.name %>
+                  </h2>
+
+                  <!-- Description -->
+                  <% if (meal.description && meal.description.trim() !== '') { %>
+                    <p class="description-text text-gray-600 text-sm mb-4 leading-relaxed">
+                      <%= meal.description %>
+                    </p>
+                  <% } %>
+
+                  <!-- Nutritional Information -->
+                  <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                      <div class="text-2xl font-bold text-green-600"><%= meal.protein %></div>
+                      <div class="text-xs text-green-700 font-medium uppercase tracking-wide">Protein (g)</div>
+                    </div>
+                    <div class="text-center p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                      <div class="text-2xl font-bold text-blue-600"><%= meal.carbohydrates %></div>
+                      <div class="text-xs text-blue-700 font-medium uppercase tracking-wide">Carbs (g)</div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="text-center p-3 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+                      <div class="text-2xl font-bold text-yellow-600"><%= meal.fat %></div>
+                      <div class="text-xs text-yellow-700 font-medium uppercase tracking-wide">Fat (g)</div>
+                    </div>
+                    <div class="text-center p-3 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl col-span-2 sm:col-span-1">
+                      <div class="text-lg font-bold text-purple-600">
+                        <span class="text-2xl"><%= meal.protein + meal.carbohydrates + meal.fat %></span>g total
+                      </div>
+                      <div class="text-xs text-purple-700 font-medium uppercase tracking-wide">Macros</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <button
-              class="bg-blue-500 text-white font-semibold py-2 rounded-b-lg mt-2 transition duration-200 hover:bg-blue-600"
-              data-user-id="<%= userId %>"
-              onclick="consumeMeal('<%= meal.id %>')"
-            >
-              Consume
-            </button>
+            <% }) %>
+          </div>
 
-            <button
-              class="my-2"
-              onclick="loadContent('meals/preparation/<%= meal.id %>')"
-            >
-              View Preparation
-            </button>
+          <!-- Stats Row -->
+          <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+              <div class="text-3xl font-bold text-blue-600"><%= meals.length %></div>
+              <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Total Meals</div>
+            </div>
+           
           </div>
-          <% }) %> <% } else { %>
-          <div class="col-span-full text-center text-gray-500">
-            No meals found.
+        <% } else { %>
+          <div class="text-center py-20">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20.618 5.382A12.1 12.1 0 0112 3a11.999 11.999 0 00-8 3.382 12 12 0 000 17.236 12.1 12.1 0 008 3.382 11.999 11.999 0 008-3.382 12 12 0 000-17.236zm-2.093 14.823a10 10 0 11-2.588-3.46l-3.92-3.92a2 2 0 01-.293-.59l-.668-3.346a2 2 0 012.122-2.122l3.346.668a2 2 0 01.59.293l3.92 3.92a10 10 0 01-3.589 2.637z"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-2">No Meals Available</h2>
+            <p class="text-gray-500 max-w-md mx-auto">
+              Our meals directory is currently empty. Please check back later for delicious and nutritious meal options.
+            </p>
           </div>
-          <% } %>
-        </div>
+        <% } %>
       </div>
     </main>
-
-    <!-- Modal -->
-    <div
-      id="mealsModal"
-      class="fixed inset-0 flex items-center justify-center z-50 hidden"
-    >
-      <div class="modal-content">
-        <h2 id="modalMessage" class="text-lg font-semibold"></h2>
-        <button
-          id="closeModalButton"
-          class="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Close
-        </button>
-      </div>
-    </div>
   </body>
 </html>

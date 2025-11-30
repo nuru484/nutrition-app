@@ -10,6 +10,9 @@
     "migrate": "npx prisma migrate dev --name init",
     "start": "node server.js"
   },
+  "prisma": {
+    "seedMeals": "node prisma/seeds/meals.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

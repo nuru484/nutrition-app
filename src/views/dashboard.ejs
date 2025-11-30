@@ -4,26 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="styles/tailwindOut.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/x-icon" href="/photos/logo.jpg" />
-    <title>NutriApp</title>
+    <title><%= title %> - NutriApp</title>
     <style>
-      /* Prevent body from scrolling */
       body {
-        overflow: hidden; /* Hide body overflow to prevent scrolling */
+        overflow: hidden;
       }
-      /* Set sidebar height and styling */
       #sidebar {
-        height: 100vh; /* Full viewport height */
-        width: 250px; /* Width of the sidebar */
+        height: 100vh;
+        width: 250px;
       }
-      /* Set main container height and scrolling */
       #main-container {
-        height: 100vh; /* Full viewport height */
-        overflow-y: auto; /* Enable vertical scrolling inside main container */
-        padding: 2rem; /* Keep padding for aesthetics */
+        height: 100vh;
+        overflow-y: auto;
+        padding: 2rem;
       }
-      /* Sidebar styles */
       .sidebar-button {
         width: 100%;
       }
@@ -54,13 +49,12 @@
               <a href="/dashboard">
                 <button
                   id="dashboard"
-                  class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
+                  class="sidebar-button bg-blue-700 hover:bg-blue-600 text-white py-2 rounded transition"
                 >
                   Dashboard
                 </button>
               </a>
             </li>
-
             <li>
               <button
                 id="meals"
@@ -70,56 +64,28 @@
                 Meals
               </button>
             </li>
-
             <li>
               <button
                 id="exercise"
                 class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
                 onclick="loadContent('exercises')"
               >
-                Exercise
+                Recommended Meals
               </button>
             </li>
-
             <li>
               <button
                 id="water"
                 class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
                 onclick="loadContent('water-consumption')"
               >
-                Water
-              </button>
-            </li>
-            <li>
-              <button
-                id="weight"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('weight-records')"
-              >
-                Weight
-              </button>
-            </li>
-            <li>
-              <button
-                id="nutrition-goals"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('nutrition-goals')"
-              >
-                Nutrition Goals
-              </button>
-            </li>
-            <li>
-              <button
-                id="nutrition-log"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('nutritional-info')"
-              >
-                Nutrition Log
+                User Health Conditions
               </button>
             </li>
           </ul>
         </nav>
       </div>
+     
       <a
         href="/logout"
         class="bg-red-500 hover:bg-red-600 text-center text-white py-2 rounded transition mt-4"
@@ -131,128 +97,116 @@
     <main id="main-container" class="flex-grow container mx-auto p-8">
       <h1 class="text-3xl font-semibold mb-6">Dashboard</h1>
 
-      <!-- First summary Section -->
-      <section
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
-      >
-        <div class="bg-blue-100 p-6 rounded-lg shadow-lg text-center">
-          <h3 class="text-lg font-medium">Calories (24hrs)</h3>
-          <p class="text-3xl font-bold"><%= totalCalories %> kcal</p>
-        </div>
-        <div class="bg-green-100 p-6 rounded-lg shadow-lg text-center">
-          <h3 class="text-lg font-medium">Protein (24hrs)</h3>
-          <p class="text-3xl font-bold"><%= totalProtein %> g</p>
-        </div>
-        <div class="bg-yellow-100 p-6 rounded-lg shadow-lg text-center">
-          <h3 class="text-lg font-medium">Carbohydrates (24hrs)</h3>
-          <p class="text-3xl font-bold"><%= totalCarbs %> g</p>
-        </div>
-        <div class="bg-red-100 p-6 rounded-lg shadow-lg text-center">
-          <h3 class="text-lg font-medium">Fat (24hrs)</h3>
-          <p class="text-3xl font-bold"><%= totalFat %> g</p>
+      <!-- User Profile Section -->
+      <section class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold mb-6">User Profile</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-3">
+            <p class="text-gray-600"><strong>Name:</strong> <span class="font-medium"><%= user.name %></span></p>
+            <p class="text-gray-600"><strong>Email:</strong> <span class="font-medium"><%= user.email %></span></p>
+          </div>
+          <div>
+            <p class="text-gray-600 mb-4"><strong>Health Conditions:</strong></p>
+            <% if (userConditions && userConditions.length > 0) { %>
+              <div class="flex flex-wrap gap-2">
+                <% userConditions.forEach(condition => { %>
+                  <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <%= condition.name %>
+                  </span>
+                <% }); %>
+              </div>
+            <% } else { %>
+              <p class="text-gray-500 italic">No health conditions recorded</p>
+            <% } %>
+          </div>
         </div>
       </section>
 
-      <!-- Adjusted grid for three sections in a row -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Top 3 Recommended Meals Section -->
         <section class="bg-white p-6 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-semibold mb-4">Water Consumption Today</h2>
-          <p class="text-xl"><%= totalWater %> L / 5 L (Goal)</p>
-        </section>
-
-        <section class="bg-white p-6 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-semibold mb-4">Latest Weight Record</h2>
-          <% if (latestWeight) { %>
-          <p class="text-xl">
-            Weight: <%= latestWeight.weight %> lbs on <%= new
-            Date(latestWeight.recordedAt).toDateString() %>
-          </p>
+          <h2 class="text-2xl font-semibold mb-6">Top 3 Recommended Meals</h2>
+          <% if (recommendedMeals && recommendedMeals.length > 0) { %>
+            <div class="space-y-4">
+              <% recommendedMeals.forEach(recMeal => { %>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div class="flex items-start space-x-4">
+                    <img 
+                      src="<%= recMeal.meal.photo %>" 
+                      alt="<%= recMeal.meal.name %>" 
+                      class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                    />
+                    <div class="flex-grow min-w-0">
+                      <h3 class="font-semibold text-lg mb-1 truncate"><%= recMeal.meal.name %></h3>
+                      <p class="text-sm text-gray-600 mb-2 line-clamp-2"><%= recMeal.meal.description %></p>
+                      <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                          For: <%= recMeal.condition.name %>
+                        </span>
+                        <% if (recMeal.score) { %>
+                          <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                            Score: <%= recMeal.score %>/10
+                          </span>
+                        <% } %>
+                      </div>
+                      <% if (recMeal.reason) { %>
+                        <p class="text-xs text-blue-600 italic mb-3"><%= recMeal.reason %></p>
+                      <% } %>
+                      <div class="flex flex-wrap gap-4 text-xs text-gray-600">
+                        <span class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-1"></span> <%= recMeal.meal.calories %> kcal</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> <%= recMeal.meal.protein %>g P</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span> <%= recMeal.meal.carbohydrates %>g C</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-purple-500 rounded-full mr-1"></span> <%= recMeal.meal.fat %>g F</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
           <% } else { %>
-          <p class="text-xl">No weight records found.</p>
+            <div class="text-center py-12">
+              <p class="text-gray-500 text-lg">No recommended meals available</p>
+              <p class="text-gray-400 text-sm mt-2">Add health conditions to get personalized recommendations</p>
+            </div>
           <% } %>
         </section>
 
-        <!-- Nutritional Goals Section -->
+        <!-- Top 3 Meals Section -->
         <section class="bg-white p-6 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-semibold mb-4">Nutritional Goals</h2>
-          <ul class="space-y-2 text-gray-600">
-            <% if (nutritionalGoals && nutritionalGoals.length > 0) { %> <%
-            nutritionalGoals.forEach(goal => { %>
-            <li>
-              <p class="text-sm">
-                - Gain <%= goal.nutrientType %>: <%= goal.goalAmount %> g <% if
-                (goal.achieved) { %> <% } else { %> <% } %>
-              </p>
-            </li>
-            <% }); %> <% } else { %>
-            <p>No goals set.</p>
-            <% } %>
-          </ul>
+          <h2 class="text-2xl font-semibold mb-6">Top 3 Available Meals</h2>
+          <% if (topMeals && topMeals.length > 0) { %>
+            <div class="space-y-4">
+              <% topMeals.forEach(meal => { %>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div class="flex items-start space-x-4">
+                    <img 
+                      src="<%= meal.photo %>" 
+                      alt="<%= meal.name %>" 
+                      class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                    />
+                    <div class="flex-grow min-w-0">
+                      <h3 class="font-semibold text-lg mb-1 truncate"><%= meal.name %></h3>
+                      <p class="text-sm text-gray-600 mb-3 line-clamp-2"><%= meal.description %></p>
+                      <div class="flex flex-wrap gap-4 text-xs text-gray-600">
+                        <span class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-1"></span> <%= meal.calories %> kcal</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> <%= meal.protein %>g P</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span> <%= meal.carbohydrates %>g C</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-purple-500 rounded-full mr-1"></span> <%= meal.fat %>g F</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="text-center py-12">
+              <p class="text-gray-500 text-lg">No meals available</p>
+            </div>
+          <% } %>
         </section>
       </div>
-
-      <section class="bg-white p-6 rounded-lg shadow-lg my-6">
-        <h2 class="text-2xl font-semibold mb-4">Charts</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 class="text-lg font-medium mb-2">
-              Calorie Intake Over the Last 7 Days
-            </h3>
-            <canvas id="calorieIntakeChart" class="w-full h-64"></canvas>
-          </div>
-          <div>
-            <h3 class="text-lg font-medium mb-2">
-              Weight Tracking Over the Last 7 Days
-            </h3>
-            <canvas id="weightChart" class="w-full h-64"></canvas>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <script>
-      // Calorie Intake Chart
-      const calorieIntakeData = <%- JSON.stringify(calorieIntakeData) %>;
-      const ctx1 = document.getElementById('calorieIntakeChart').getContext('2d');
-      const calorieIntakeChart = new Chart(ctx1, {
-          type: 'bar',
-          data: calorieIntakeData,
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                  },
-              },
-          },
-      });
-
-      // Weight Tracking Chart
-      const weightChartData = <%- JSON.stringify(weightChartData) %>;
-      const ctx2 = document.getElementById('weightChart').getContext('2d');
-      const weightChart = new Chart(ctx2, {
-          type: 'line',
-          data: weightChartData,
-          options: {
-              scales: {
-                  y: {
-                      beginAtZero: true,
-                  },
-              },
-          },
-      });
-    </script>
-
     <script type="text/javascript" src="/scripts/dashboardScripts.js"></script>
-    <script type="text/javascript" src="/scripts/mealsScripts.js"></script>
-    <script type="text/javascript" src="/scripts/exerciseScripts.js"></script>
-    <script
-      type="text/javascript"
-      src="/scripts/waterConsumptionScripts.js"
-    ></script>
-    <script type="text/javascript" src="/scripts/weightScripts.js"></script>
-    <script
-      type="text/javascript"
-      src="/scripts/nutritionalGoalScripts.js"
-    ></script>
   </body>
 </html>
