@@ -8,10 +8,9 @@
     "build": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "migrate": "npx prisma migrate dev --name init",
-    "start": "node server.js"
-  },
-  "prisma": {
-    "seedMeals": "node prisma/seeds/meals.js"
+    "start": "node server.js",
+    "seedMeals": "node prisma/seeds/meals.js",
+    "seedConditions": "node prisma/seeds/conditions.js"
   },
   "keywords": [],
   "author": "",

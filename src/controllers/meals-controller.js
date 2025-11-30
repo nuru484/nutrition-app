@@ -5,8 +5,6 @@ const getMeals = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    console.log(`Fetching all meals for user ID: ${userId}`);
-
     const meals = await prismaClient.meal.findMany({
       select: {
         id: true,
@@ -20,7 +18,6 @@ const getMeals = async (req, res) => {
       },
     });
 
-    console.log(`Fetched ${meals.length} meals successfully.`);
     res.render("meals", { meals, userId });
   } catch (error) {
     console.error("Error fetching meals:", error);

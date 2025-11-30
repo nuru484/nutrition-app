@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="styles/tailwindOut.css" rel="stylesheet" />
+    <title>Health Conditions Directory</title>
+    <style>
+      main {
+        padding: 2rem;
+      }
+      .conditions-container {
+        padding-bottom: 2rem;
+      }
+      .condition-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        border-left: 4px solid #3b82f6;
+      }
+      .condition-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .condition-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+      .description-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.6;
+      }
+      .severity-badge {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-to-br from-indigo-50 via-white to-blue-100 min-h-screen">
+    <main class="container mx-auto">
+      <!-- Header Section -->
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-6">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+          Health Conditions Directory
+        </h1>
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          Comprehensive information about common health conditions to help you understand symptoms, 
+          dietary considerations, and management strategies for better health outcomes.
+        </p>
+      </div>
+
+      <!-- Conditions Grid -->
+      <div class="conditions-container">
+        <% if (conditions.length > 0) { %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <% conditions.forEach(condition => { %>
+              <div class="condition-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <!-- Condition Header -->
+                <div class="p-6 pb-4">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="condition-icon bg-gradient-to-br from-blue-500 to-indigo-600">
+                      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3l4 4m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <span class="severity-badge">Common</span>
+                  </div>
+                  
+                  <!-- Condition Name -->
+                  <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    <%= condition.name %>
+                  </h2>
+                  
+                  <!-- Description -->
+                  <% if (condition.description && condition.description.trim() !== '') { %>
+                    <p class="description-text text-gray-600 text-sm leading-relaxed">
+                      <%= condition.description %>
+                    </p>
+                  <% } %>
+                </div>
+                
+                <!-- Condition Footer -->
+                <div class="px-6 pb-6 bg-gradient-to-r from-blue-50 to-indigo-50">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-blue-700">
+                      Learn dietary recommendations
+                    </span>
+                    <div class="flex items-center space-x-2">
+                      <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      <span class="text-xs text-gray-500">Health Condition</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+              <div class="text-3xl font-bold text-blue-600"><%= conditions.length %></div>
+              <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Total Conditions</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+              <div class="text-3xl font-bold text-green-600">15+</div>
+              <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Chronic Conditions</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+              <div class="text-3xl font-bold text-purple-600">100%</div>
+              <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Verified Info</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+              <div class="text-3xl font-bold text-indigo-600">Diet Focused</div>
+              <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Recommendations</div>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="text-center py-20">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-2">No Conditions Available</h2>
+            <p class="text-gray-500 max-w-md mx-auto">
+              Our health conditions directory is currently empty. Please check back later for comprehensive health condition information.
+            </p>
+          </div>
+        <% } %>
+      </div>
+    </main>
+  </body>
+</html>
