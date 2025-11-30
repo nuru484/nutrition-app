@@ -6,6 +6,12 @@ const loginRoutes = require("./login-routes");
 const dashboardRoute = require("./dashboard-route");
 const mealsRoutes = require("./meals-routes");
 const conditionsRoutes = require("./conditions-routes");
+const recommendedMealsRoutes = require("./recommended-meals-routes");
+const userConditionsRoutes = require("./user-conditions-routes");
+
+routes.use("/", userConditionsRoutes);
+
+routes.use("/", recommendedMealsRoutes);
 
 routes.use("/", signUpRoutes);
 

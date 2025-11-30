@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="styles/tailwindOut.css" rel="stylesheet" />
+  <title>Your Recommended Meals</title>
+  <style>
+    main { padding: 2rem; }
+    .recommendation-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+      border-left: 4px solid #10b981;
+    }
+    .recommendation-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .meal-image { height: 200px; object-fit: cover; }
+    .score-badge {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .condition-badge {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .description-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+    .reason-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-100 min-h-screen">
+  <main class="container mx-auto">
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mb-6">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+        </svg>
+      </div>
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4">
+        Your Personalized Recommendations
+      </h1>
+      <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+        Meals carefully selected based on your health conditions to support your nutritional needs and wellness goals.
+      </p>
+    </div>
+
+    <!-- Conditions Display -->
+    <% if (!noConditions && userConditions && userConditions.length > 0) { %>
+      <div class="mb-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Health Conditions</h2>
+          <div class="flex flex-wrap gap-2">
+            <% userConditions.forEach(condition => { %>
+              <span class="condition-badge"><%= condition %></span>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Recommendations Grid -->
+    <div class="meals-container">
+      <% if (recommendedMeals.length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <% recommendedMeals.forEach((meal, index) => { %>
+            <div class="recommendation-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <!-- Meal Image and Score -->
+              <div class="relative">
+                <img
+                  src="<%= meal.photo.startsWith('http') ? meal.photo : '/photos/meals/' + meal.photo %>"
+                  alt="<%= meal.name %>"
+                  class="meal-image w-full"
+                  onerror="this.src='/photos/meals/placeholder.jpg'"
+                />
+                <div class="absolute top-3 left-3">
+                  <div class="score-badge">
+                    <span class="text-sm font-bold"><%= meal.recommendation?.score || 0 %></span>/10
+                  </div>
+                </div>
+                <% if (meal.recommendation) { %>
+                  <div class="absolute top-3 right-3">
+                    <span class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                      <%= meal.recommendation.conditionName %>
+                    </span>
+                  </div>
+                <% } %>
+              </div>
+
+              <!-- Meal Details -->
+              <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <%= meal.name %>
+                </h2>
+
+                <!-- Description -->
+                <% if (meal.description && meal.description.trim() !== '') { %>
+                  <p class="description-text text-gray-600 text-sm mb-4 leading-relaxed">
+                    <%= meal.description %>
+                  </p>
+                <% } %>
+
+                <!-- Recommendation Reason -->
+                <% if (meal.recommendation && meal.recommendation.reason) { %>
+                  <div class="mb-4 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl">
+                    <div class="flex items-start justify-between mb-2">
+                      <span class="text-sm font-semibold text-emerald-700">Why Recommended</span>
+                      <div class="w-2 h-2 bg-emerald-500 rounded-full mt-1.5"></div>
+                    </div>
+                    <p class="reason-text text-sm text-gray-600 leading-relaxed">
+                      <%= meal.recommendation.reason %>
+                    </p>
+                  </div>
+                <% } %>
+
+                <!-- Nutritional Information -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                  <div class="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                    <div class="text-2xl font-bold text-green-600"><%= meal.protein %></div>
+                    <div class="text-xs text-green-700 font-medium uppercase tracking-wide">Protein (g)</div>
+                  </div>
+                  <div class="text-center p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                    <div class="text-2xl font-bold text-blue-600"><%= meal.carbohydrates %></div>
+                    <div class="text-xs text-blue-700 font-medium uppercase tracking-wide">Carbs (g)</div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="text-center p-3 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+                    <div class="text-2xl font-bold text-yellow-600"><%= meal.fat %></div>
+                    <div class="text-xs text-yellow-700 font-medium uppercase tracking-wide">Fat (g)</div>
+                  </div>
+                  <div class="text-center p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl col-span-2 sm:col-span-1">
+                    <div class="text-lg font-bold text-emerald-600">
+                      <span class="text-2xl"><%= meal.calories %></span> kcal
+                    </div>
+                    <div class="text-xs text-emerald-700 font-medium uppercase tracking-wide">Calories</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+            <div class="text-3xl font-bold text-emerald-600"><%= recommendedMeals.length %></div>
+            <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Recommended Meals</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+            <div class="text-3xl font-bold text-teal-600">
+              <%= Math.max(...recommendedMeals.map(m => m.recommendation?.score || 0)) || 0 %>
+            </div>
+            <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Top Score</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+            <div class="text-3xl font-bold text-blue-600"><%= userConditions?.length || 0 %></div>
+            <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Your Conditions</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+            <div class="text-3xl font-bold text-purple-600">Personalized</div>
+            <div class="text-sm text-gray-600 font-medium uppercase tracking-wide">Recommendations</div>
+          </div>
+        </div>
+
+      <% } else if (noConditions) { %>
+        <div class="text-center py-20">
+          <div class="mx-auto w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-semibold text-gray-900 mb-4">No Health Conditions Set</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+            To receive personalized meal recommendations, please add your health conditions to your profile. 
+            Our system will then suggest meals specifically beneficial for your health needs.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="/profile" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors">
+              Add Health Conditions
+            </a>
+            <a href="/meals" class="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-3 rounded-xl font-semibold transition-colors">
+              Browse All Meals
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="text-center py-20">
+          <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20.618 5.382A12.1 12.1 0 0112 3a11.999 11.999 0 00-8 3.382 12 12 0 000 17.236 12.1 12.1 0 008 3.382 11.999 11.999 0 008-3.382 12 12 0 000-17.236zm-2.093 14.823a10 10 0 11-2.588-3.46l-3.92-3.92a2 2 0 01-.293-.59l-.668-3.346a2 2 0 012.122-2.122l3.346.668a2 2 0 01.59.293l3.92 3.92a10 10 0 01-3.589 2.637z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-900 mb-2">No Recommendations Available</h2>
+          <p class="text-gray-500 max-w-md mx-auto">
+            Currently, there are no personalized meal recommendations for your conditions. 
+            Please check back later as our nutrition database is regularly updated.
+          </p>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>
