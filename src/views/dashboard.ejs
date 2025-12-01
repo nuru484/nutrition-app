@@ -1,222 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="styles/tailwindOut.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="/photos/logo.jpg" />
-    <title><%= title %> - NutriApp</title>
-    <style>
-      body {
-        overflow: hidden;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="styles/tailwindOut.css" rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="/photos/logo.jpg" />
+  <title><%= title %> - NutriApp</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-50: 239 246 255;
+      --primary-100: 219 234 254;
+      --primary-500: 59 130 246;
+      --primary-600: 37 99 235;
+      --primary-700: 29 78 216;
+      --success-500: 34 197 94;
+      --warning-500: 245 158 11;
+      --danger-500: 239 68 68;
+      --gray-50: 249 250 251;
+      --gray-100: 243 244 246;
+      --gray-900: 17 24 39;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #sidebar {
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, rgb(15 23 42) 0%, rgb(30 41 59) 100%);
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #main-container {
+      margin-left: 280px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgb(248 250 252) 0%, rgb(241 245 249) 100%);
+      padding: 1.5rem;
+      transition: margin-left 0.3s ease;
+    }
+
+    .sidebar-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: rgb(148 163 184);
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-button:hover {
+      background: rgba(59 130 246, 0.1);
+      color: rgb(219 234 254);
+      transform: translateX(4px);
+    }
+
+    .sidebar-button.active {
+      background: linear-gradient(135deg, rgb(59 130 246) 0%, rgb(37 99 235) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 8px 16px -6px rgba(0, 0, 0, 0.05);
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .nutrient-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+      color: rgb(22, 163, 74);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .calories-badge {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(234, 179, 8, 0.1) 100%);
+      color: rgb(202, 138, 4);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .meal-score {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+      color: rgb(6, 147, 227);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    @media (max-width: 1024px) {
       #sidebar {
-        height: 100vh;
-        width: 250px;
+        transform: translateX(-100%);
+      }
+      #sidebar.open {
+        transform: translateX(0);
       }
       #main-container {
-        height: 100vh;
-        overflow-y: auto;
-        padding: 2rem;
+        margin-left: 0;
       }
-      .sidebar-button {
+    }
+
+    @media (max-width: 768px) {
+      #main-container {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .meal-card {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .meal-image {
         width: 100%;
+        height: 160px;
       }
-    </style>
-  </head>
-  <body class="bg-gray-100 flex">
-    <aside
-      id="sidebar"
-      class="bg-blue-600 p-4 flex flex-col justify-between text-white"
-    >
-      <div>
-        <div class="logo flex items-center mb-6">
-          <img src="/photos/logo.jpg" class="w-10 h-10 mr-2" alt="App Logo" />
-          <span class="text-2xl font-semibold">NutriApp</span>
-        </div>
+    }
 
-        <div class="mb-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            class="w-full p-2 rounded bg-blue-500 text-white focus:outline-none"
-          />
-        </div>
+    .mobile-menu-toggle {
+      display: none;
+    }
 
-        <nav>
-          <ul class="flex flex-col space-y-2">
-            <li>
-              <a href="/dashboard">
-                <button
-                  id="dashboard"
-                  class="sidebar-button bg-blue-700 hover:bg-blue-600 text-white py-2 rounded transition"
-                >
-                  Dashboard
-                </button>
-              </a>
-            </li>
-            <li>
-              <button
-                id="meals"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('meals')"
-              >
-                Meals
-              </button>
-            </li>
-            <li>
-              <button
-                id="exercise"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('recommended-meals')"
-              >
-                Recommended Meals
-              </button>
-            </li>
-            <li>
-              <button
-                id="water"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('user-conditions')"
-              >
-                User Health Conditions
-              </button>
-            </li>
+    @media (max-width: 1024px) {
+      .mobile-menu-toggle {
+        display: block;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 100;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      }
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden">
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle md:hidden" onclick="toggleSidebar()">
+    <i class="fas fa-bars text-xl"></i>
+  </button>
 
-            <li>
-              <button
-                id="water"
-                class="sidebar-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition"
-                onclick="loadContent('conditions')"
-              >
-                Health Conditions
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-     
-      <a
-        href="/logout"
-        class="bg-red-500 hover:bg-red-600 text-center text-white py-2 rounded transition mt-4"
-      >
-        <button>Logout</button>
-      </a>
-    </aside>
-
-    <main id="main-container" class="flex-grow container mx-auto p-8">
-      <h1 class="text-3xl font-semibold mb-6">Dashboard</h1>
-
-      <!-- User Profile Section -->
-      <section class="bg-white p-6 rounded-lg shadow-lg mb-8">
-        <h2 class="text-2xl font-semibold mb-6">User Profile</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="space-y-3">
-            <p class="text-gray-600"><strong>Name:</strong> <span class="font-medium"><%= user.name %></span></p>
-            <p class="text-gray-600"><strong>Email:</strong> <span class="font-medium"><%= user.email %></span></p>
+  <!-- Sidebar -->
+  <aside id="sidebar" class="flex flex-col">
+    <div class="flex-1 p-6 overflow-y-auto">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8 pb-6 border-b border-slate-800/30">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-utensils text-white text-lg"></i>
           </div>
           <div>
-            <p class="text-gray-600 mb-4"><strong>Health Conditions:</strong></p>
-            <% if (userConditions && userConditions.length > 0) { %>
-              <div class="flex flex-wrap gap-2">
-                <% userConditions.forEach(condition => { %>
-                  <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    <%= condition.name %>
-                  </span>
-                <% }); %>
-              </div>
-            <% } else { %>
-              <p class="text-gray-500 italic">No health conditions recorded</p>
-            <% } %>
+            <h1 class="text-2xl font-bold text-white">NutriApp</h1>
+            <p class="text-slate-400 text-sm">Nutrition Dashboard</p>
           </div>
         </div>
-      </section>
+      </div>
+
+      <!-- Search -->
+      <div class="mb-8">
+        <div class="relative">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input
+            type="text"
+            placeholder="Search meals, conditions..."
+            class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all duration-300"
+          />
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="space-y-1">
+        <a href="/dashboard">
+          <button id="dashboard" class="sidebar-button active">
+            <i class="fas fa-chart-line"></i>
+            Dashboard
+          </button>
+        </a>
+        <button id="meals" class="sidebar-button" onclick="loadContent('meals')">
+          <i class="fas fa-utensils"></i>
+          Meals
+        </button>
+        <button id="exercise" class="sidebar-button" onclick="loadContent('recommended-meals')">
+          <i class="fas fa-fire"></i>
+          Recommended Meals
+        </button>
+        <button id="water" class="sidebar-button" onclick="loadContent('user-conditions')">
+          <i class="fas fa-user-md"></i>
+          User Health Conditions
+        </button>
+        <button id="conditions" class="sidebar-button" onclick="loadContent('conditions')">
+          <i class="fas fa-stethoscope"></i>
+          Health Conditions
+        </button>
+      </nav>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-6 pt-0 border-t border-slate-800/30">
+      <a href="/logout" class="w-full inline-flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="main-container" class="pb-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 via-blue-700 to-indigo-800 bg-clip-text text-transparent">
+          Dashboard
+        </h1>
+        <p class="mt-2 text-slate-600 text-lg">Welcome back! Here's what's important today.</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-sm text-slate-500">
+          <i class="fas fa-calendar-day text-blue-500"></i>
+          <span><%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile Card -->
+    <section class="card mb-8 p-8 lg:p-10">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8">
+        <div class="flex items-center gap-6">
+          <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+            <i class="fas fa-user text-2xl text-white"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900"><%= user.name %></h2>
+            <p class="text-slate-600 mt-1"><%= user.email %></p>
+          </div>
+        </div>
+      </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Top 3 Recommended Meals Section -->
-        <section class="bg-white p-6 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-semibold mb-6">Top 3 Recommended Meals</h2>
-          <% if (recommendedMeals && recommendedMeals.length > 0) { %>
-            <div class="space-y-4">
-              <% recommendedMeals.forEach(recMeal => { %>
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                  <div class="flex items-start space-x-4">
-                    <img 
-                      src="<%= recMeal.meal.photo %>" 
-                      alt="<%= recMeal.meal.name %>" 
-                      class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                    />
-                    <div class="flex-grow min-w-0">
-                      <h3 class="font-semibold text-lg mb-1 truncate"><%= recMeal.meal.name %></h3>
-                      <p class="text-sm text-gray-600 mb-2 line-clamp-2"><%= recMeal.meal.description %></p>
-                      <div class="flex flex-wrap gap-2 mb-3">
-                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                          For: <%= recMeal.condition.name %>
-                        </span>
-                        <% if (recMeal.score) { %>
-                          <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                            Score: <%= recMeal.score %>/10
-                          </span>
-                        <% } %>
-                      </div>
-                      <% if (recMeal.reason) { %>
-                        <p class="text-xs text-blue-600 italic mb-3"><%= recMeal.reason %></p>
-                      <% } %>
-                      <div class="flex flex-wrap gap-4 text-xs text-gray-600">
-                        <span class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-1"></span> <%= recMeal.meal.calories %> kcal</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> <%= recMeal.meal.protein %>g P</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span> <%= recMeal.meal.carbohydrates %>g C</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-purple-500 rounded-full mr-1"></span> <%= recMeal.meal.fat %>g F</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        <div class="space-y-4">
+          <div class="bg-gradient-to-r from-slate-50 to-blue-50/50 p-6 rounded-2xl border border-blue-100">
+            <h3 class="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+              <i class="fas fa-heartbeat text-red-500"></i>
+              Health Goals
+            </h3>
+            <p class="text-slate-600">Personalized nutrition recommendations based on your health profile</p>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-notes-medical text-blue-500"></i>
+            Health Conditions
+          </h3>
+          <% if (userConditions && userConditions.length > 0) { %>
+            <div class="flex flex-wrap gap-3">
+              <% userConditions.forEach(condition => { %>
+                <span class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-50 to-pink-50 text-red-700 border border-red-200 rounded-full text-sm font-medium shadow-sm">
+                  <i class="fas fa-stethoscope"></i>
+                  <%= condition.name %>
+                </span>
               <% }); %>
             </div>
           <% } else { %>
-            <div class="text-center py-12">
-              <p class="text-gray-500 text-lg">No recommended meals available</p>
-              <p class="text-gray-400 text-sm mt-2">Add health conditions to get personalized recommendations</p>
+            <div class="bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-200 text-center">
+              <i class="fas fa-check-circle text-3xl text-emerald-500 mb-3"></i>
+              <p class="text-emerald-700 font-medium">Excellent! No health conditions recorded</p>
+              <p class="text-emerald-600 text-sm mt-1">You're in great health</p>
             </div>
           <% } %>
-        </section>
-
-        <!-- Top 3 Meals Section -->
-        <section class="bg-white p-6 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-semibold mb-6">Top 3 Available Meals</h2>
-          <% if (topMeals && topMeals.length > 0) { %>
-            <div class="space-y-4">
-              <% topMeals.forEach(meal => { %>
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                  <div class="flex items-start space-x-4">
-                    <img 
-                      src="<%= meal.photo %>" 
-                      alt="<%= meal.name %>" 
-                      class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                    />
-                    <div class="flex-grow min-w-0">
-                      <h3 class="font-semibold text-lg mb-1 truncate"><%= meal.name %></h3>
-                      <p class="text-sm text-gray-600 mb-3 line-clamp-2"><%= meal.description %></p>
-                      <div class="flex flex-wrap gap-4 text-xs text-gray-600">
-                        <span class="flex items-center"><span class="w-2 h-2 bg-orange-500 rounded-full mr-1"></span> <%= meal.calories %> kcal</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span> <%= meal.protein %>g P</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span> <%= meal.carbohydrates %>g C</span>
-                        <span class="flex items-center"><span class="w-2 h-2 bg-purple-500 rounded-full mr-1"></span> <%= meal.fat %>g F</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              <% }); %>
-            </div>
-          <% } else { %>
-            <div class="text-center py-12">
-              <p class="text-gray-500 text-lg">No meals available</p>
-            </div>
-          <% } %>
-        </section>
+        </div>
       </div>
-    </main>
+    </section>
 
-    <script type="text/javascript" src="/scripts/dashboardScripts.js"></script>
-  </body>
+    <!-- Meals Grid -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <!-- Recommended Meals -->
+      <section class="card p-8">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+          <i class="fas fa-fire text-orange-500"></i>
+          Top Recommended Meals
+        </h2>
+        <% if (recommendedMeals && recommendedMeals.length > 0) { %>
+          <div class="space-y-6">
+            <% recommendedMeals.slice(0, 3).forEach((recMeal, index) => { %>
+              <div class="meal-card group">
+                <div class="flex items-start gap-6">
+                  <div class="relative">
+                    <img
+                      src="<%= recMeal.meal.photo %>"
+                      alt="<%= recMeal.meal.name %>"
+                      class="meal-image w-24 h-24 lg:w-28 lg:h-28 object-cover rounded-2xl shadow-lg group-hover:scale-105 transition-transform duration-300 flex-shrink-0"
+                    />
+                    <div class="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                      #<%= index + 1 %>
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <%= recMeal.meal.name %>
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4 line-clamp-3"><%= recMeal.meal.description %></p>
+                    
+                    <div class="flex flex-wrap gap-3 mb-6">
+                      <span class="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium">
+                        <i class="fas fa-heartbeat"></i>
+                        For: <%= recMeal.condition.name %>
+                      </span>
+                      <% if (recMeal.score) { %>
+                        <span class="meal-score inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-bold">
+                          <i class="fas fa-star"></i>
+                          <%= recMeal.score %>/10
+                        </span>
+                      <% } %>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                      <span class="nutrient-badge calories-badge">
+                        <i class="fas fa-fire"></i>
+                        <%= recMeal.meal.calories %> kcal
+                      </span>
+                      <span class="nutrient-badge">
+                        <i class="fas fa-dumbbell"></i>
+                        <%= recMeal.meal.protein %>g Protein
+                      </span>
+                      <span class="nutrient-badge" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(234, 179, 8, 0.1) 100%); color: rgb(202, 138, 4); border-color: rgba(245, 158, 11, 0.2);">
+                        <i class="fas fa-carrot"></i>
+                        <%= recMeal.meal.carbohydrates %>g Carbs
+                      </span>
+                      <span class="nutrient-badge" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); color: rgb(139, 92, 246); border-color: rgba(168, 85, 247, 0.2);">
+                        <i class="fas fa-cheese"></i>
+                        <%= recMeal.meal.fat %>g Fat
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+              <i class="fas fa-search text-3xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900 mb-3">No Recommendations Yet</h3>
+            <p class="text-slate-600 max-w-md mx-auto mb-6">Add your health conditions to receive personalized meal recommendations</p>
+            <button class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <i class="fas fa-plus"></i>
+              Add Conditions
+            </button>
+          </div>
+        <% } %>
+      </section>
+
+      <!-- Top Meals -->
+      <section class="card p-8">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+          <i class="fas fa-utensils text-green-500"></i>
+          Popular Meals
+        </h2>
+        <% if (topMeals && topMeals.length > 0) { %>
+          <div class="space-y-6">
+            <% topMeals.slice(0, 3).forEach((meal, index) => { %>
+              <div class="group p-6 bg-gradient-to-br from-slate-50 to-gray-50 rounded-2xl border border-slate-200 hover:border-slate-300 transition-all duration-300">
+                <div class="flex items-start gap-4">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+                      <%= meal.name %>
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4 line-clamp-3"><%= meal.description %></p>
+                    <div class="flex flex-wrap gap-3">
+                      <span class="nutrient-badge calories-badge">
+                        <i class="fas fa-fire"></i>
+                        <%= meal.calories %> kcal
+                      </span>
+                      <span class="nutrient-badge">
+                        <i class="fas fa-dumbbell"></i>
+                        <%= meal.protein %>g Protein
+                      </span>
+                      <span class="nutrient-badge" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(234, 179, 8, 0.1) 100%); color: rgb(202, 138, 4); border-color: rgba(245, 158, 11, 0.2);">
+                        <i class="fas fa-carrot"></i>
+                        <%= meal.carbohydrates %>g Carbs
+                      </span>
+                      <span class="nutrient-badge" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); color: rgb(139, 92, 246); border-color: rgba(168, 85, 247, 0.2);">
+                        <i class="fas fa-cheese"></i>
+                        <%= meal.fat %>g Fat
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto bg-gradient-to-br from-gray-500 to-slate-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+              <i class="fas fa-utensils text-3xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900 mb-3">No Meals Available</h3>
+            <p class="text-slate-600">Meals will appear here once added to the system</p>
+          </div>
+        <% } %>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.querySelector('.mobile-menu-toggle');
+      if (window.innerWidth <= 1024 && 
+          !sidebar.contains(e.target) && 
+          !toggleBtn.contains(e.target) && 
+          sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    // Update active button states
+    document.querySelectorAll('.sidebar-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar-button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+
+   <script type="text/javascript" src="/scripts/userConditionsScripts.js"></script>
+  <script type="text/javascript" src="/scripts/dashboardScripts.js"></script>
+</body>
 </html>

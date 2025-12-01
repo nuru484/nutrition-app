@@ -1,3 +1,5 @@
+// src/public/scripts/dashboardScripts.js
+
 async function loadContent(endpoint) {
   try {
     const response = await fetch(`/${endpoint}`);
